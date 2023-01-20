@@ -39,7 +39,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApp {
-                TopHeader()
                 MainContent()
             }
         }
@@ -66,10 +65,9 @@ fun TopHeader(totalPerPerson: Double = 0.0) {
  Surface(modifier = Modifier
      .fillMaxWidth()
      .height(150.dp)
-     .background(
-         Color(0xFFE9D7F7)
-     )
-     .clip(shape = RoundedCornerShape(CornerSize(12.dp)))) {
+     .padding(20.dp)
+     .clip(shape = RoundedCornerShape(CornerSize(12.dp))), color = Color(0xFF8BC34A)
+ ) {
         Column(modifier = Modifier, verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
             val total = "%.2f".format(totalPerPerson);
             Text(text = "Total Per Person",  style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp, ))
@@ -101,19 +99,29 @@ fun BillForm(modifier: Modifier = Modifier, onChangeValue: (String) -> Unit = {}
     val valueState = remember {
         mutableStateOf(0)
     }
+    val sliderVlaue = remember {
+        mutableStateOf(0f)
+    }
+
+    val tipPercentage = (sliderVlaue.value * 100).toInt()
 
     val keyboardController = LocalSoftwareKeyboardController.current
-    Surface(modifier = Modifier
-        .padding(2.dp)
-        .fillMaxWidth(), shape = RoundedCornerShape(corner = CornerSize(12.dp)), border = BorderStroke(width = 2.dp, color = Color.LightGray)) {
-        Column(modifier = Modifier, horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Top) {
-            InputField(valueState = totalBillState, labelId = "Enter Bill", enabled =  true, isSingleLine = true, onAction = KeyboardActions {
-                if(!validState) return@KeyboardActions
-                onChangeValue(totalBillState.value.trim())
-                //
-                keyboardController?.hide()
-            })
-            if (validState) {
+
+    Column() {
+        TopHeader()
+
+        Surface(modifier = Modifier
+            .padding(2.dp)
+            .fillMaxWidth()
+           , shape = RoundedCornerShape(corner = CornerSize(12.dp)), border = BorderStroke(width = 2.dp, color = Color.LightGray)) {
+            Column(modifier = Modifier, horizontalAlignment = Alignment.Start, verticalArrangement = Arrangement.Top) {
+                InputField(valueState = totalBillState, labelId = "Enter Bill", enabled =  true, isSingleLine = true, onAction = KeyboardActions {
+                    if(!validState) return@KeyboardActions
+                    onChangeValue(totalBillState.value.trim())
+                    //
+                    keyboardController?.hide()
+                })
+                if (validState) {
                     Row(modifier = Modifier.padding(3.dp), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "Split", modifier= Modifier.align(alignment = Alignment.CenterVertically))
                         Spacer(modifier = modifier.width(150.dp))
@@ -132,11 +140,32 @@ fun BillForm(modifier: Modifier = Modifier, onChangeValue: (String) -> Unit = {}
                         }
 
                     }
-            } else {
-                Box(modifier = Modifier) {}
+                    Row(modifier = Modifier.padding(horizontal = 3.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+                        Text(text = "Tip", style = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold))
+                        Spacer(modifier = Modifier.width(width = 200.dp))
+                        Text(text = "$33.00")
+                    }
+
+                    Column(modifier = Modifier, verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("$tipPercentage %", style = TextStyle(fontSize = 22.sp))
+                        Spacer(modifier = Modifier.height(height = 30.dp))
+                        Slider(value = sliderVlaue.value, onValueChange = {
+                            sliderVlaue.value = it;
+
+                        }, modifier = Modifier.padding(start = 16.dp, end = 16.dp), steps = 5)
+                    }
+                } else {
+                    Row() {
+                        
+                    }
+                }
             }
         }
     }
+
+
+
+
 }
 
 @Preview(showBackground = true)
