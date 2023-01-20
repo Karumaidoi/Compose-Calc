@@ -98,6 +98,10 @@ fun BillForm(modifier: Modifier = Modifier, onChangeValue: (String) -> Unit = {}
         totalBillState.value.trim().isNotEmpty()
     }
 
+    val valueState = remember {
+        mutableStateOf(0)
+    }
+
     val keyboardController = LocalSoftwareKeyboardController.current
     Surface(modifier = Modifier
         .padding(2.dp)
@@ -113,13 +117,17 @@ fun BillForm(modifier: Modifier = Modifier, onChangeValue: (String) -> Unit = {}
                     Row(modifier = Modifier.padding(3.dp), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "Split", modifier= Modifier.align(alignment = Alignment.CenterVertically))
                         Spacer(modifier = modifier.width(150.dp))
-                        Row(modifier=Modifier.padding(horizontal = 3.dp), horizontalArrangement = Arrangement.End) {
+                        Row(modifier=Modifier.padding(horizontal = 18.dp), horizontalArrangement = Arrangement.Center) {
                             RoundedButton(imageVector = Icons.Default.Remove, onClick = {
-
+                                if (valueState.value > 1) {
+                                    valueState.value -=1;
+                                } else 1;
                             }, modifier = Modifier)
-
+                            Spacer(modifier = Modifier.width(20.dp))
+                            Text(text = "${valueState.value}", style = MaterialTheme.typography.h4)
+                            Spacer(modifier = Modifier.width(20.dp))
                             RoundedButton(imageVector = Icons.Default.Add, onClick = {
-
+                                valueState.value += 1;
                             }, modifier = Modifier)
                         }
 
